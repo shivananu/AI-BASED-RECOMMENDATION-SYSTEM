@@ -1,0 +1,68 @@
+** COMPANY ** : CODTECH IT SOLUTIONS
+
+** NAME ** : GANDLA SHIVA MALLIKARJUN
+
+** INTERN ID ** : CT6WDYX
+
+** DOMAIN ** : JAVA PROGRAMMING
+
+** BATCH DURATION ** : December 17th, 2024 to February 2nd, 2025
+
+** MENTOR NAME ** : Neela Santhosh Kumar
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import org.json.JSONObject;
+
+public class WeatherApiConsumer {
+
+    private static final String API_URL = "http://api.openweathermap.org/data/2.5/weather";
+    private static final String API_KEY = "your_api_key_here"; // Replace with your API key
+
+    public static void main(String[] args) {
+        String city = "London"; // You can change this to any city
+
+        try {
+            // Construct the full API URL
+            String urlString = API_URL + "?q=" + city + "&appid=" + API_KEY + "&units=metric";
+            URL url = new URL(urlString);
+
+            // Open connection and set request method
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+
+            // Read response
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            StringBuilder response = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
+            reader.close();
+
+            // Parse JSON response
+            JSONObject jsonResponse = new JSONObject(response.toString());
+
+            // Extract weather data
+            String cityName = jsonResponse.getString("name");
+            JSONObject main = jsonResponse.getJSONObject("main");
+            double temperature = main.getDouble("temp");
+            double feelsLike = main.getDouble("feels_like");
+            int humidity = main.getInt("humidity");
+            JSONObject weather = jsonResponse.getJSONArray("weather").getJSONObject(0);
+            String description = weather.getString("description");
+
+            // Display data in structured format
+            System.out.println("Weather Information for " + cityName + ":\n");
+            System.out.println("Temperature: " + temperature + "°C");
+            System.out.println("Feels Like: " + feelsLike + "°C");
+            System.out.println("Humidity: " + humidity + "%");
+            System.out.println("Description: " + description);
+
+        } catch (Exception e) {
+            System.out.println("An error occurred: " + e.getMessage());
+        }
+    }
+}
